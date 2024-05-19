@@ -1,10 +1,12 @@
 import "dotenv/config";
 import express, { Request, Response, NextFunction } from "express";
-import RegistrationRoutes from './Routes/RegistrationRoute';
+import RegistrationRoutes from './Registration/Routes/RegistrationRoute';
 import morgan from "morgan";
 import cors from 'cors';
+import BookSlotSpaceRoutes from './UserBooking/Routes/BookSlotSpaceRoutes'
+import FeedBackRoutes from './FeedBack/Routes/FeedBackRoutes'
 
-const app = express() 
+const app = express();
 
 app.use(morgan("dev"));
 
@@ -13,7 +15,10 @@ app.use(cors())
 
 
 app.use("/Register", RegistrationRoutes);
+app.use("/BookSlotSpace", BookSlotSpaceRoutes);
+app.use("/feedback", FeedBackRoutes)
 
+app.get("/", (req, res) => res.status(200).send("Hello world")); 
 
 app.use((error: unknown, req : Request, res : Response, next : NextFunction) => {
     console.log(error);
@@ -29,4 +34,6 @@ app.use((req : Request, res : Response, next : NextFunction) => {
     next(Error("Endpoint not found"))
 })
 
+
 export default app;
+
