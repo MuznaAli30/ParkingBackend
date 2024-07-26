@@ -13,7 +13,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors(
     {
-        origin : ['https://sage-gingersnap-a20fa4.netlify.app'],
+        origin : ['https://66a37175f896d40009c09906--shiny-rabanadas-76f287.netlify.app'],
         methods : ["POST" , "GET", "DELETE"],
         credentials : true
     }
