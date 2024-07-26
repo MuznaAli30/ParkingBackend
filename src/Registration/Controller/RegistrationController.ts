@@ -1,5 +1,6 @@
     import { Request, Response, NextFunction, RequestHandler  } from "express";
     import Registrationschema from '../models/RegistrationSchemaPage';
+    import BookSlotSpaceSchema from '../../UserBooking/models/BookSlotSpaceSchema';
     import bcrypt from 'bcryptjs';
 
     // get all users saved in DB
@@ -42,15 +43,9 @@
             if(userExist) { //check if user already exist 
                 return res.status(400).json({success: false, message: "user already exist"});
             }
-            if(!Name || !Email || !Password || !Contact){
-                return res.status(204).json({Success: false , message: "All fileds are required"})
+            if(!Name || !Email || !Password ||Password.length !> 6 || !Contact  ||Contact.length != 11){
+                return res.status(204).json({Success: false , message: "Invalid Fields"})
             }
-            // if(Password.length != 6){
-            //     return res.status(422).json({Success: false , message: "invalid Password"})
-            // }
-            // if(Contact.length != 11){
-            //     return res.status(403).json({Success: false , message: "in valid Number"})
-            // }
 
             const passwordHashed = await bcrypt.hash(Password, 15) //save password in hash form
 
@@ -61,6 +56,7 @@
                 Contact : Contact,
             });
 
+
             res.status(201).json(newRegistration); //user registered 
 
         } catch (error) {
@@ -69,35 +65,34 @@
         }
     };
 
-    // add or register one new user with real timeeeeeeeeeee
-// export const addRegisterUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-//     const { Name, Email, Password, Contact } = req.body;
-//     const io = req.app.get('io');
   
-//     try {
-//       const userExist = await Registrationschema.findOne({ Email });
-  
-//       if (userExist) {
-//         return res.status(400).json({ success: false, message: "user already exist" });
-//       }
-  
-//       const passwordHashed = await bcrypt.hash(Password, 15);
-  
-//       const newRegistration = await Registrationschema.create({
-//         Name,
-//         Email,
-//         Password: passwordHashed,
-//         Contact,
-//       });
-  
-//       io.emit('newUser', newRegistration); // Emit event to all connected clients
-  
-//       res.status(201).json(newRegistration);
-//     } catch (error) {
-//       next(error);
-//     }
-//   };
-  
+
+// Delete a user by ID and their bookings
+export const deleteUser: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    const userId = req.params.id;
+
+    try {
+        // Delete user's bookings first
+        const bookingDeleteResult = await BookSlotSpaceSchema.deleteMany({ userID: userId });
+        
+        // Delete the user
+        const userDeleteResult = await Registrationschema.findByIdAndDelete(userId);
+        
+        if (userDeleteResult) {
+            res.status(200).json({
+                success: true, 
+                message: "User and their bookings deleted successfully",
+                deletedBookingsCount: bookingDeleteResult.deletedCount
+            });
+        } else {
+            res.status(404).json({ success: false, message: "User not found" });
+        }
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 
   //login api
     export const Login: RequestHandler = async (req : Request , res : Response, next : NextFunction) => {

@@ -16,7 +16,7 @@ app.use(cors())
 
 app.use("/Register", RegistrationRoutes);
 app.use("/BookSlotSpace", BookSlotSpaceRoutes);
-app.use("/feedback", FeedBackRoutes)
+app.use("/feedback", FeedBackRoutes);
 
 app.get("/", (req, res) => res.status(200).send("Hello world")); 
 

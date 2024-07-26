@@ -1,35 +1,77 @@
 import  BookSlotSpaceSchema from '../models/BookSlotSpaceSchema';
 import { Request, Response, NextFunction, RequestHandler  } from "express";
 
+//book space by user mineeeeeeeeeeeeeeee
+// export const BookSlotSpace: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+//     const { image, timing, slotNumber, userID } = req.body;
 
-//booking slot controller logic
+//     try {
+//         const { startTimeUnix, endTimeUnix } = timing;
+        
+//         // Check for overlapping bookings
+//         const overlappingBooking = await BookSlotSpaceSchema.findOne({
+//             slotNumber,
+//             $or: [
+//                 { startTimeUnix: { $lt: endTimeUnix, $gt: startTimeUnix } },
+//                 { endTimeUnix: { $lt: endTimeUnix, $gt: startTimeUnix } },
+//                 { startTimeUnix: { $lte: startTimeUnix }, endTimeUnix: { $gte: endTimeUnix } }
+//             ]
+//         });
+        
+
+//         if (overlappingBooking) {
+//             return res.status(400).json({ success: false, message: "Slot is already booked" });
+//         }
+
+//         const newBooking = await BookSlotSpaceSchema.create({
+//             image,
+//             startTimeUnix,
+//             endTimeUnix,
+//             slotNumber,
+//             userID
+//         });
+
+//         res.status(200).json(newBooking);
+//     } catch (error) {
+//         next(error);
+//     }
+// };
+
+//new ISO
 export const BookSlotSpace: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
-    const image = req.body.image;
-    const timing = req.body.timing;
-    const slotNumber = req.body.slotNumber;
-    const userID = req.body.userID;
+    const { image, timing, slotNumber, userID } = req.body;
 
     try {
-        // const timingObject = JSON.parse(timing);
+        const { startTimeISO, endTimeISO } = timing;
+        
+        // Check for overlapping bookings
+        const overlappingBooking = await BookSlotSpaceSchema.findOne({
+            slotNumber,
+            $or: [
+                { startTimeISO: { $lt: endTimeISO, $gt: startTimeISO } },
+                { endTimeISO: { $lt: endTimeISO, $gt: startTimeISO } },
+                { startTimeISO: { $lte: startTimeISO }, endTimeISO: { $gte: endTimeISO } }
+            ]
+        });
 
-        const bookingExist = await BookSlotSpaceSchema.findOne({image,timing,slotNumber,userID});
-
-        if(bookingExist) {
-            return res.status(400).json({success : false , message : "already booked"});
+        if (overlappingBooking) {
+            return res.status(400).json({ success: false, message: "Slot is already booked" });
         }
 
         const newBooking = await BookSlotSpaceSchema.create({
-            image : image,
-            timing : timing,
-            slotNumber : slotNumber,
-            userID : userID
+            image,
+            startTimeISO,
+            endTimeISO,
+            slotNumber,
+            userID
         });
 
         res.status(200).json(newBooking);
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
+
 
 
 //GET logic for booking slot
@@ -42,26 +84,27 @@ export const getAllBookings : RequestHandler = async(req: Request, res: Response
         
     }
 }
-
-//get bookings of user bt id 
-export const getOneUserBooking : RequestHandler = async(req: Request, res: Response, next: NextFunction) => {
-    const bookingId = req.params.id;
+//get bookings of user by id 
+export const getOneUserBooking: RequestHandler = async (req: Request, res: Response, next: NextFunction) => {
+    let userID = req.params.userID;
+    console.log(`Fetching booking with ID: '${userID}'`);
 
     try {
-        const booking = await BookSlotSpaceSchema.findById(bookingId).exec();
-        
-        if (booking) {
-            res.status(200).json({ success: true, booking });
-          } else {
-            res.status(404).json({ success: false, message: 'booking not found' });
-          }
+        const bookings = await BookSlotSpaceSchema.find({ userID }).populate('userID');
+        console.log("Bookings", bookings);
+
+        if (bookings.length > 0) {
+            res.status(200).json(bookings);
+        } else {
+            res.status(404).json({ success: false, message: 'No bookings found for this user' });
+        }
     } catch (error) {
+        console.error(`Error fetching bookings: ${error}`);
         next(error);
     }
-}
+};
 
-
-//delet user 
+//delet user booking by id 
 
 export const dltUserBooking : RequestHandler = async(req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id;

@@ -7,5 +7,6 @@ router.get("/getUsers", RegistraionController.getRegisterUser);
 router.post("/addUsers",RegistraionController.addRegisterUser);
 router.get("/registerid/:id",RegistraionController.getOneRegisterUser);
 router.post("/loginUsers", RegistraionController.Login);
+router.delete("/deleteUser/:id", RegistraionController.deleteUser);
 
 export default router;
