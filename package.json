@@ -1,11 +1,15 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "proxy" : "https://66a74654c455ce0008bc6d4f--shiny-rabanadas-76f287.netlify.app/",
   "description": "",
   "main": "dist/server.ts",
   "scripts": {
-    "start": "nodemon src/server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "nodemon server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\""
+    
   },
   "keywords": [],
   "author": "",
