@@ -11,13 +11,7 @@ const app = express();
 app.use(morgan("dev"));
 
 app.use(express.json());
-app.use(cors(
-    {
-        origin : ['https://66a377138903990008d6269d--shiny-rabanadas-76f287.netlify.app/'],
-        methods : ["POST" , "GET", "DELETE"],
-        credentials : true
-    }
-))
+app.use(cors())
 
 
 app.use("/Register", RegistrationRoutes);
